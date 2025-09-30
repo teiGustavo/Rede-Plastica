@@ -8,8 +8,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: "usuario")]
-class UsuarioEntity
+#[ORM\Table(name: "rede_social")]
+class RedeSocialEntity
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -23,31 +23,24 @@ class UsuarioEntity
         }
     }
 
-    #[ORM\Column(length: 50, unique: true)]
-    public string $login {
+    #[ORM\Column(length: 50)]
+    public string $tipo {
         get {
-            return $this->login;
+            return $this->tipo;
         }
         set {
-            $this->login = $value;
+            $this->tipo = $value;
         }
     }
 
     #[ORM\Column(length: 255)]
-    public string $senha {
+    public string $profile {
         get {
-            return $this->senha;
+            return $this->profile;
         }
         set {
-            $this->senha = $value;
+            $this->profile = $value;
         }
     }
 
-    public function fromExisting(UsuarioEntity $existing): self
-    {
-        $this->id = $existing->id;
-        $this->login = $existing->login;
-        $this->senha = $existing->senha;
-        return $this;
-    }
 }

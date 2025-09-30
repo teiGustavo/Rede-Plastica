@@ -30,9 +30,9 @@ readonly class UsuarioFactory
         }
 
         return Result::ok(new Usuario(
-            new Email($login),
-            new Senha($senha),
-            $id
+            login: new Email($login),
+            senha: new Senha($senha),
+            id: $id
         ));
     }
 }

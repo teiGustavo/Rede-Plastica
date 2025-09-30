@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 use App\Application\Contracts\Hashers\PasswordHasherProviderInterface;
 use App\Infrastructure\Http\Middlewares\HttpExceptionHandlerMiddleware;
+use App\Infrastructure\Persistence\Entities\Pessoa\CustomTypes\PointType;
 use App\Infrastructure\Providers\PasswordHasherProvider;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMSetup;
@@ -80,7 +82,12 @@ return [
             'charset' => 'utf8',
         ], $doctrineConfig);
 
-        return new EntityManager($connection, $doctrineConfig);
+        $entityManager = new EntityManager($connection, $doctrineConfig);
+
+        Type::addType('point', PointType::class);
+        $entityManager->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('point', 'point');
+
+        return $entityManager;
     },
 
     // Providers

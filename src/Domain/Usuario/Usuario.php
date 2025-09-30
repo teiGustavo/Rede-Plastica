@@ -16,7 +16,7 @@ class Usuario extends AbstractDomainEntity
     public function __construct(
         private Email $login,
         private Senha $senha,
-        ?int $id
+        ?int $id = null,
     ) {
         parent::__construct($id);
     }
@@ -36,7 +36,7 @@ class Usuario extends AbstractDomainEntity
      * Retorna um Result indicando sucesso ou falha da operação.
      *
      * @param string $newLogin
-     * @return Result<bool>
+     * @return Result<self>
      */
     public function changeLogin(string $newLogin): Result
     {
@@ -51,7 +51,7 @@ class Usuario extends AbstractDomainEntity
         }
 
         $this->login = new Email($newLogin);
-        return $result;
+        return Result::ok($this);
     }
 
     /**
@@ -59,11 +59,11 @@ class Usuario extends AbstractDomainEntity
      * Retorna um Result indicando sucesso ou falha da operação.
      *
      * @param string $newHashedSenha
-     * @return Result<bool>
+     * @return Result<self>
      */
     public function changeSenha(string $newHashedSenha): Result
     {
         $this->senha = new Senha($newHashedSenha);
-        return Result::ok(true);
+        return Result::ok($this);
     }
 }

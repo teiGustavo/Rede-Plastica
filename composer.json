@@ -42,6 +42,9 @@
         "zeuxisoo/slim-whoops": "^0.7.3"
     },
     "scripts": {
-        "doctrine": "@php src/Infrastructure/Cli/Doctrine/cli-config.php"
+        "doctrine": "@php src/Infrastructure/Cli/Doctrine/cli-config.php",
+        "post-install-cmd": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ]
     }
 }
