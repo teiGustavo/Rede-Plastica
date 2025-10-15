@@ -58,7 +58,7 @@ readonly class PessoaJuridicaFactory
         return Result::ok(new PessoaJuridica(
             $nomeFantasia,
             $razaoSocial,
-            $cnpj,
+            new Cnpj($cnpj),
             new Endereco(
                 $enderecoDTO->getRua(),
                 $enderecoDTO->getNumero(),

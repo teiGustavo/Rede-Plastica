@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\Entities\Pessoa;
 
+use App\Domain\Pessoa\Pessoa\DTOs\CoordenadaDTO;
 use App\Domain\Pessoa\Pessoa\TipoPessoa;
+use App\Infrastructure\Persistence\Entities\BaseEntity;
+use App\Infrastructure\Persistence\Entities\Pessoa\CustomTypes\PointType;
 use App\Infrastructure\Persistence\Entities\Pessoa\Embeddables\Endereco;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -17,25 +19,20 @@ use Doctrine\ORM\Mapping as ORM;
     TipoPessoa::FISICA->value => PessoaFisicaEntity::class,
     TipoPessoa::JURIDICA->value => PessoaJuridicaEntity::class
 ])]
-abstract class PessoaEntity
+abstract class PessoaEntity extends BaseEntity
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
-    public ?int $id {
+    #[ORM\Embedded(class: Endereco::class, columnPrefix: false)]
+    public Endereco $endereco {
         get {
-            return $this->id;
+            return $this->endereco;
         }
         set {
-            $this->id = $value;
+            $this->endereco = $value;
         }
     }
 
-    #[ORM\Embedded(class: Endereco::class, columnPrefix: false)]
-    public Endereco $endereco;
-
-    #[ORM\Column(name: 'ponto_geografico', type: "point", nullable: true)]
-    public ?array $pontoGeografico {
+    #[ORM\Column(name: 'ponto_geografico', type: PointType::POINT, nullable: true, options: ['default' => null])]
+    public ?CoordenadaDTO $pontoGeografico = null {
         get {
             return $this->pontoGeografico;
         }
@@ -43,10 +40,6 @@ abstract class PessoaEntity
             $this->pontoGeografico = $value;
         }
     }
-
-    #[ORM\OneToOne(targetEntity: PessoaEntity::class)]
-    #[ORM\JoinColumn(name: "pessoa_id", referencedColumnName: "id", nullable: false)]
-    public PessoaEntity $pessoa;
 
     public function __construct()
     {

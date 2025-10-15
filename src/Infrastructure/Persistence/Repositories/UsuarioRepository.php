@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\Repositories;
 
-use App\Domain\Usuario\Exceptions\EmailAlreadyRegisteredException;
-use App\Domain\Usuario\Usuario;
-use App\Domain\Usuario\UsuarioRepositoryInterface;
+use App\Domain\Usuario\Usuario\Exceptions\EmailAlreadyRegisteredException;
+use App\Domain\Usuario\Usuario\Usuario;
+use App\Domain\Usuario\Usuario\UsuarioRepositoryInterface;
 use App\Infrastructure\Persistence\Entities\Usuario\UsuarioEntity;
 use App\Infrastructure\Persistence\Mappers\UsuarioMapper;
 use App\Infrastructure\Persistence\Queries\QueryParams;

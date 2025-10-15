@@ -4,28 +4,16 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\Entities\Pessoa;
 
-use Doctrine\DBAL\Types\Types;
+use App\Infrastructure\Persistence\Entities\Pessoa\CustomTypes\CnpjType;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: "pessoa_juridica")]
 class PessoaJuridicaEntity extends PessoaEntity
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
-    public ?int $id {
-        get {
-            return $this->id;
-        }
-        set {
-            $this->id = $value;
-        }
-    }
-
-    #[ORM\Column(length: 200)]
+    #[ORM\Column(name: 'razao_social', length: 200)]
     public string $razaoSocial {
-        get  {
+        get {
             return $this->razaoSocial;
         }
         set {
@@ -33,7 +21,7 @@ class PessoaJuridicaEntity extends PessoaEntity
         }
     }
 
-    #[ORM\Column(length: 150)]
+    #[ORM\Column(name: 'nome_fantasia', length: 150)]
     public string $nomeFantasia {
         get  {
             return $this->nomeFantasia;
@@ -43,7 +31,7 @@ class PessoaJuridicaEntity extends PessoaEntity
         }
     }
 
-    #[ORM\Column(length: 14, unique: true)]
+    #[ORM\Column(type: CnpjType::CNPJ, unique: true)]
     public string $cnpj {
         get {
             return $this->cnpj;

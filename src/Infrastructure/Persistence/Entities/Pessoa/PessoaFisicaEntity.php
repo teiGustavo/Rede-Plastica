@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\Entities\Pessoa;
 
+use App\Infrastructure\Persistence\Entities\Pessoa\CustomTypes\CpfType;
 use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -12,18 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: "pessoa_fisica")]
 class PessoaFisicaEntity extends PessoaEntity
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
-     public ?int $id {
-        get {
-            return $this->id;
-        }
-        set {
-            $this->id = $value;
-        }
-    }
-
     #[ORM\Column(length: 150)]
     public string $nome {
         get {
@@ -34,7 +23,7 @@ class PessoaFisicaEntity extends PessoaEntity
         }
     }
 
-    #[ORM\Column(length: 11, unique: true)]
+    #[ORM\Column(type: CpfType::CPF, unique: true)]
     public string $cpf {
         get {
             return $this->cpf;

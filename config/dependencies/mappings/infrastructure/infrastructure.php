@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 use App\Application\Contracts\Hashers\PasswordHasherProviderInterface;
 use App\Infrastructure\Http\Middlewares\HttpExceptionHandlerMiddleware;
+use App\Infrastructure\Persistence\Entities\Pessoa\CustomTypes\CepType;
+use App\Infrastructure\Persistence\Entities\Pessoa\CustomTypes\CnpjType;
+use App\Infrastructure\Persistence\Entities\Pessoa\CustomTypes\CpfType;
 use App\Infrastructure\Persistence\Entities\Pessoa\CustomTypes\PointType;
+use App\Infrastructure\Persistence\Entities\Usuario\InformacoesContato\Telefone\CustomTypes\TelefoneE164Type;
 use App\Infrastructure\Providers\PasswordHasherProvider;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Types\Type;
@@ -67,10 +71,11 @@ return [
     EntityManagerInterface::class => function (ContainerInterface $container) {
         $config = $container->get('config');
         $dbConfig = $config['db'];
+        $appEnv = $config['app']['env'];
 
         $doctrineConfig = ORMSetup::createAttributeMetadataConfiguration(
             paths: [dirname(__DIR__, 3) . '/src/Infrastructure/Persistence/Entities'],
-            isDevMode: $config['app']['env'] !== 'production'
+            isDevMode: $appEnv !== 'production'
         );
 
         $connection = DriverManager::getConnection([
@@ -84,8 +89,27 @@ return [
 
         $entityManager = new EntityManager($connection, $doctrineConfig);
 
-        Type::addType('point', PointType::class);
-        $entityManager->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('point', 'point');
+        $registerCustomDoctrineType = function (
+            string $doctrineTypeName,
+            string $doctrineTypeClass
+        ) use ($entityManager): void
+        {
+            if (!Type::hasType($doctrineTypeName)) {
+                Type::addType($doctrineTypeName, $doctrineTypeClass);
+
+                $entityManager->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping(
+                    "db_$doctrineTypeName",
+                    $doctrineTypeName
+                );
+            }
+        };
+
+        // Registrando tipos customizados do Doctrine
+        $registerCustomDoctrineType(CepType::CEP, CepType::class);
+        $registerCustomDoctrineType(PointType::POINT, PointType::class);
+        $registerCustomDoctrineType(CpfType::CPF, CpfType::class);
+        $registerCustomDoctrineType(CnpjType::CNPJ, CnpjType::class);
+        $registerCustomDoctrineType(TelefoneE164Type::TELEFONE, TelefoneE164Type::class);
 
         return $entityManager;
     },

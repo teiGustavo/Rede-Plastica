@@ -7,7 +7,7 @@ namespace App\Infrastructure\Http\Controllers;
 use App\Application\UseCases\Usuario\DeleteUsuarioUseCase;
 use App\Application\UseCases\Usuario\RegisterUsuarioUseCase;
 use App\Application\UseCases\Usuario\UpdateUsuarioUseCase;
-use App\Domain\Usuario\UsuarioRepositoryInterface;
+use App\Domain\Usuario\Usuario\UsuarioRepositoryInterface;
 use App\Infrastructure\Http\Controllers\Helpers\HttpStatusCode;
 use App\Infrastructure\Http\Controllers\Helpers\ResponseBuilder;
 use App\Infrastructure\Http\Controllers\Helpers\SymfonyValidationErrorHandlerTrait;

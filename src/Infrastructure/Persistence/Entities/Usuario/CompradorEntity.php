@@ -8,6 +8,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
+#[ORM\Table(name: "comprador")]
 class CompradorEntity extends UsuarioEntity
 {
     #[ORM\Column(name: 'deseja_recomendacao', type: Types::BOOLEAN, options: ['default' => true])]

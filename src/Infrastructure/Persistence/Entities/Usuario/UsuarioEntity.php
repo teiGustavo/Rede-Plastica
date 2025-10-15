@@ -4,76 +4,46 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\Entities\Usuario;
 
-use App\Domain\Usuario\TipoUsuario;
-use App\Infrastructure\Persistence\Entities\ContatoEntity;
+use App\Domain\Usuario\Usuario\TipoUsuario;
+use App\Infrastructure\Persistence\Entities\BaseEntity;
+use App\Infrastructure\Persistence\Entities\Pessoa\PessoaEntity;
+use App\Infrastructure\Persistence\Entities\Usuario\Coletor\ColetorEntity;
+use App\Infrastructure\Persistence\Entities\Usuario\InformacoesContato\Telefone\TelefoneContatoEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: "usuario")]
-#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\InheritanceType('JOINED')]
 #[ORM\DiscriminatorColumn(name: 'tipo', type: 'string', length: 20)]
 #[ORM\DiscriminatorMap([
     TipoUsuario::VISITANTE->value => VisitanteEntity::class,
     TipoUsuario::COMPRADOR->value  => CompradorEntity::class,
     TipoUsuario::COLETOR->value  => ColetorEntity::class,
 ])]
-abstract class UsuarioEntity
+abstract class UsuarioEntity extends BaseEntity
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
-    public ?int $id {
-        get {
-            return $this->id;
-        }
-        set {
-            $this->id = $value;
-        }
-    }
-
     #[ORM\Column(length: 50, unique: true)]
-    public string $login {
-        get {
-            return $this->login;
-        }
-        set {
-            $this->login = $value;
-        }
-    }
+    public string $login;
 
     #[ORM\Column(length: 255)]
-    public string $senha {
-        get {
-            return $this->senha;
-        }
-        set {
-            $this->senha = $value;
-        }
-    }
+    public string $senha;
+
+    #[ORM\OneToOne(targetEntity: PessoaEntity::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\JoinColumn(name: "pessoa_id", referencedColumnName: "id", nullable: false)]
+    public PessoaEntity $pessoa;
 
     /**
-     * Muitos para muitos - Usuários e Contatos
-     * @var Collection<int, ContatoEntity>
+     * 0:N - Usuários e Telefones de Contato
+     * @var Collection<int, TelefoneContatoEntity>
      */
-    #[ORM\JoinTable(name: 'usuario_contato')]
-    #[ORM\JoinColumn(name: 'usuario_id', referencedColumnName: 'id')]
-    #[ORM\InverseJoinColumn(name: 'contato_id', referencedColumnName: 'id')]
-    #[ORM\ManyToMany(targetEntity: ContatoEntity::class)]
-    public Collection $contatos {
-        get {
-            return $this->contatos;
-        }
-        set {
-            $this->contatos = $value;
-        }
-    }
+    #[ORM\OneToMany(targetEntity: TelefoneContatoEntity::class, mappedBy: 'usuario', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    public Collection $telefones;
 
     public function __construct()
     {
-        $this->contatos = new ArrayCollection();
+        $this->telefones = new ArrayCollection();
     }
 
     protected function setFieldsFromChild(UsuarioEntity $existing): self
@@ -81,7 +51,8 @@ abstract class UsuarioEntity
         $this->id = $existing->id;
         $this->login = $existing->login;
         $this->senha = $existing->senha;
-        $this->contatos = $existing->contatos;
+        $this->pessoa = $existing->pessoa;
+        $this->telefones = $existing->telefones;
 
         return $this;
     }
